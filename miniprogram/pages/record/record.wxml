@@ -14,7 +14,7 @@
   </view>
 
   <!-- 喂养 -->
-  <view wx:if="{{type === 'feed'}}" class="form-card">
+  <view wx:if="{{type === 'feeding'}}" class="form-card">
     <view class="form-row">
       <text class="form-label">喂养方式</text>
       <view class="seg">
@@ -47,15 +47,25 @@
   <view wx:if="{{type === 'sleep'}}" class="form-card">
     <view class="form-row">
       <text class="form-label">入睡时间</text>
-      <picker mode="date" fields="minute" value="{{sleepStart}}" data-field="sleepStart" bindchange="onPicker">
-        <view class="picker-value">{{sleepStart}}</view>
-      </picker>
+      <view class="dt-picker">
+        <picker mode="date" value="{{sleepStartDate}}" data-field="sleepStartDate" bindchange="onPicker">
+          <view class="picker-value">{{sleepStartDate}}</view>
+        </picker>
+        <picker mode="time" value="{{sleepStartTime}}" data-field="sleepStartTime" bindchange="onPicker">
+          <view class="picker-value">{{sleepStartTime}}</view>
+        </picker>
+      </view>
     </view>
     <view class="form-row">
       <text class="form-label">醒来时间</text>
-      <picker mode="date" fields="minute" value="{{sleepEnd}}" data-field="sleepEnd" bindchange="onPicker">
-        <view class="picker-value">{{sleepEnd}}</view>
-      </picker>
+      <view class="dt-picker">
+        <picker mode="date" value="{{sleepEndDate}}" data-field="sleepEndDate" bindchange="onPicker">
+          <view class="picker-value">{{sleepEndDate}}</view>
+        </picker>
+        <picker mode="time" value="{{sleepEndTime}}" data-field="sleepEndTime" bindchange="onPicker">
+          <view class="picker-value">{{sleepEndTime}}</view>
+        </picker>
+      </view>
     </view>
   </view>
 
@@ -66,14 +76,14 @@
       <view class="seg wrap">
         <view class="seg-item {{diaperType === 'wet' ? 'on' : ''}}" bindtap="onSegTap" data-field="diaperType" data-value="wet">尿湿</view>
         <view class="seg-item {{diaperType === 'dirty' ? 'on' : ''}}" bindtap="onSegTap" data-field="diaperType" data-value="dirty">有便便</view>
-        <view class="seg-item {{diaperType === 'wet_dirty' ? 'on' : ''}}" bindtap="onSegTap" data-field="diaperType" data-value="wet_dirty">都有</view>
+        <view class="seg-item {{diaperType === 'mixed' ? 'on' : ''}}" bindtap="onSegTap" data-field="diaperType" data-value="mixed">都有</view>
         <view class="seg-item {{diaperType === 'dry' ? 'on' : ''}}" bindtap="onSegTap" data-field="diaperType" data-value="dry">干燥</view>
       </view>
     </view>
   </view>
 
   <!-- 体温 -->
-  <view wx:if="{{type === 'temp'}}" class="form-card">
+  <view wx:if="{{type === 'temperature'}}" class="form-card">
     <view class="form-row">
       <text class="form-label">体温(℃)</text>
       <input class="form-input" type="digit" value="{{tempValue}}" data-field="tempValue" bindinput="onInput" placeholder="36.5" />

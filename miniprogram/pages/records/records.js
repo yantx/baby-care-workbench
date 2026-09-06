@@ -4,30 +4,27 @@ Page({
   data: {
     date: '',
     records: [],
+    total: 0,
     loading: true,
     filterType: '',
     filterOptions: [
       { value: '', label: '全部' },
-      { value: 'feed', label: '喂养' },
+      { value: 'feeding', label: '喂养' },
       { value: 'sleep', label: '睡眠' },
       { value: 'diaper', label: '尿布' },
-      { value: 'temp', label: '体温' },
+      { value: 'temperature', label: '体温' },
       { value: 'medicine', label: '用药' }
     ]
   },
 
   onLoad() {
-    this.setData({ date: this.today() })
+    const d = new Date()
+    const pad = (n) => String(n).padStart(2, '0')
+    this.setData({ date: d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) })
   },
 
   onShow() {
     this.fetchData()
-  },
-
-  today() {
-    const d = new Date()
-    const pad = (n) => String(n).padStart(2, '0')
-    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
   },
 
   onDateChange(e) {
@@ -41,20 +38,12 @@ Page({
   async fetchData() {
     this.setData({ loading: true })
     try {
-      const params = { date: this.data.date }
+      const params = { date: this.data.date, page: 1, page_size: 50 }
       if (this.data.filterType) params.type = this.data.filterType
-      const records = await get('/api/v1/records', params)
+      const resp = await get('/api/v1/records', params)
       this.setData({
-        records: (records || []).map((r) => ({
-          id: r.id,
-          icon: this.typeIcon(r.type),
-          label: this.typeLabel(r.type),
-          by: r.user_nickname || '家人',
-          startTime: this.formatTime(r.start_time),
-          endTime: this.formatTime(r.end_time),
-          detail: this.detailText(r),
-          note: r.note || ''
-        })),
+        records: (resp.list || []).map((r) => this.formatRecord(r)),
+        total: resp.total || 0,
         loading: false
       })
     } catch (e) {
@@ -63,30 +52,30 @@ Page({
     }
   },
 
-  typeIcon(t) {
-    return { feed: '🍼', sleep: '😴', diaper: '🧷', temp: '🌡️', medicine: '💊' }[t] || '📝'
-  },
-
-  typeLabel(t) {
-    return { feed: '喂养', sleep: '睡眠', diaper: '换尿布', temp: '体温', medicine: '用药' }[t] || t
-  },
-
-  detailText(r) {
-    const d = r.detail || {}
-    switch (r.type) {
-      case 'feed':
-        if (d.method === 'bottle') return '瓶喂 ' + (d.amount || 0) + 'ml'
-        return '亲喂 ' + (d.side === 'left' ? '左侧' : d.side === 'right' ? '右侧' : '两侧') + ' ' + (d.duration || 0) + '分钟'
-      case 'sleep':
-        return '睡了 ' + (d.duration_minutes || 0) + ' 分钟'
-      case 'diaper':
-        return { wet: '尿湿', dirty: '有便便', wet_dirty: '尿湿+便便', dry: '干燥' }[d.diaper_type] || ''
-      case 'temp':
-        return '体温 ' + d.temp + '℃'
-      case 'medicine':
-        return (d.name || '') + (d.dose ? ' ' + d.dose : '')
-      default:
-        return ''
+  formatRecord(r) {
+    const typeMap = {
+      feeding: { icon: '🍼', label: '喂养' },
+      sleep: { icon: '😴', label: '睡眠' },
+      diaper: { icon: '🧷', label: '换尿布' },
+      temperature: { icon: '🌡️', label: '体温' },
+      medicine: { icon: '💊', label: '用药' }
+    }
+    const t = typeMap[r.type] || { icon: '📝', label: r.type }
+    let detail = r.content || ''
+    if (!detail) {
+      if (r.type === 'feeding' && r.amount_ml) detail = r.amount_ml + 'ml'
+      else if (r.type === 'temperature' && r.temp_value) detail = r.temp_value + '℃'
+      else detail = t.label
+    }
+    return {
+      id: r.id,
+      icon: t.icon,
+      label: t.label,
+      by: (r.recorder && r.recorder.nickname) || '家人',
+      startTime: this.formatTime(r.started_at),
+      endTime: this.formatTime(r.ended_at),
+      detail,
+      note: r.note || ''
     }
   },
 
@@ -97,7 +86,7 @@ Page({
     return pad(d.getHours()) + ':' + pad(d.getMinutes())
   },
 
-  async handleDelete(e) {
+  handleDelete(e) {
     const id = e.currentTarget.dataset.id
     const that = this
     wx.showModal({

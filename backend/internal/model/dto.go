@@ -48,6 +48,8 @@ func (p *Pagination) Offset() int {
 // LoginReq 登录请求
 type LoginReq struct {
 	Code string `json:"code" binding:"required"`
+	// Nickname 可选：Mock 模式下新用户注册时的昵称；微信正式登录时忽略
+	Nickname string `json:"nickname" binding:"max=32"`
 }
 
 // LoginResp 登录响应

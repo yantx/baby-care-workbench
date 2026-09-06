@@ -16,10 +16,15 @@ Page({
       content: '确定要退出登录吗？',
       success(res) {
         if (res.confirm) {
+          try {
+            require('../../utils/ws').close()
+          } catch (e) { /* ignore */ }
           app.globalData.token = ''
           app.globalData.user = null
+          app.globalData.family = null
           wx.removeStorageSync('token')
           wx.removeStorageSync('user')
+          wx.removeStorageSync('family')
           wx.reLaunch({ url: '/pages/login/login' })
         }
       }

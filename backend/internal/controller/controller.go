@@ -60,13 +60,20 @@ func currentUserID(c *gin.Context) int64 {
 	return id
 }
 
-// activeFamilyID 从 token claims 中取活跃家庭（登录后签发）
-func activeFamilyID(c *gin.Context) int64 {
+// resolveFamilyID 取活跃家庭：优先 token claims，为 0 时回源用户表（建家庭/加入家庭后旧 Token 兜底）
+func (ctl *Controller) resolveFamilyID(c *gin.Context) int64 {
 	if v, ok := c.Get("family_id"); ok {
-		id, _ := v.(int64)
-		return id
+		if id, _ := v.(int64); id != 0 {
+			return id
+		}
 	}
-	return 0
+	user, err := ctl.Svc.Repo.GetUser(c.Request.Context(), currentUserID(c))
+	if err != nil || user == nil {
+		return 0
+	}
+	// 写回上下文，同一请求内复用
+	c.Set("family_id", user.ActiveFamilyID)
+	return user.ActiveFamilyID
 }
 
 // ---------- Auth ----------
@@ -78,7 +85,7 @@ func (ctl *Controller) Login(c *gin.Context) {
 		fail(c, model.NewBizError(model.CodeParamError, "参数错误: "+err.Error()))
 		return
 	}
-	resp, err := ctl.Svc.Login(c.Request.Context(), req.Code)
+	resp, err := ctl.Svc.Login(c.Request.Context(), req.Code, req.Nickname)
 	if err != nil {
 		ctl.respondError(c, err)
 		return
@@ -147,7 +154,7 @@ func (ctl *Controller) JoinFamily(c *gin.Context) {
 
 // CurrentFamily GET /api/v1/families/current
 func (ctl *Controller) CurrentFamily(c *gin.Context) {
-	familyID := activeFamilyID(c)
+	familyID := ctl.resolveFamilyID(c)
 	if familyID == 0 {
 		fail(c, model.NewBizError(model.CodeNotFound, "尚未创建或加入家庭"))
 		return
@@ -169,7 +176,7 @@ func (ctl *Controller) CreateBaby(c *gin.Context) {
 		fail(c, model.NewBizError(model.CodeParamError, "参数错误: "+err.Error()))
 		return
 	}
-	baby, err := ctl.Svc.CreateBaby(c.Request.Context(), currentUserID(c), activeFamilyID(c), &req)
+	baby, err := ctl.Svc.CreateBaby(c.Request.Context(), currentUserID(c), ctl.resolveFamilyID(c), &req)
 	if err != nil {
 		ctl.respondError(c, err)
 		return
@@ -186,7 +193,7 @@ func (ctl *Controller) CreateRecord(c *gin.Context) {
 		fail(c, model.NewBizError(model.CodeParamError, "参数错误: "+err.Error()))
 		return
 	}
-	rec, err := ctl.Svc.CreateRecord(c.Request.Context(), currentUserID(c), activeFamilyID(c), &req)
+	rec, err := ctl.Svc.CreateRecord(c.Request.Context(), currentUserID(c), ctl.resolveFamilyID(c), &req)
 	if err != nil {
 		ctl.respondError(c, err)
 		return
@@ -202,7 +209,7 @@ func (ctl *Controller) UpdateRecord(c *gin.Context) {
 		fail(c, model.NewBizError(model.CodeParamError, "参数错误: "+err.Error()))
 		return
 	}
-	rec, err := ctl.Svc.UpdateRecord(c.Request.Context(), currentUserID(c), activeFamilyID(c), id, &req)
+	rec, err := ctl.Svc.UpdateRecord(c.Request.Context(), currentUserID(c), ctl.resolveFamilyID(c), id, &req)
 	if err != nil {
 		ctl.respondError(c, err)
 		return
@@ -213,7 +220,7 @@ func (ctl *Controller) UpdateRecord(c *gin.Context) {
 // DeleteRecord DELETE /api/v1/records/:id
 func (ctl *Controller) DeleteRecord(c *gin.Context) {
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
-	if err := ctl.Svc.DeleteRecord(c.Request.Context(), currentUserID(c), activeFamilyID(c), id); err != nil {
+	if err := ctl.Svc.DeleteRecord(c.Request.Context(), currentUserID(c), ctl.resolveFamilyID(c), id); err != nil {
 		ctl.respondError(c, err)
 		return
 	}
@@ -227,7 +234,7 @@ func (ctl *Controller) ListRecords(c *gin.Context) {
 	p.Normalize()
 
 	q := parseRecordQuery(c)
-	records, total, err := ctl.Svc.ListRecords(c.Request.Context(), currentUserID(c), activeFamilyID(c), q, p.Page, p.PageSize)
+	records, total, err := ctl.Svc.ListRecords(c.Request.Context(), currentUserID(c), ctl.resolveFamilyID(c), q, p.Page, p.PageSize)
 	if err != nil {
 		ctl.respondError(c, err)
 		return
@@ -238,7 +245,7 @@ func (ctl *Controller) ListRecords(c *gin.Context) {
 // TodayStats GET /api/v1/stats/today
 func (ctl *Controller) TodayStats(c *gin.Context) {
 	babyID, _ := strconv.ParseInt(c.Query("baby_id"), 10, 64)
-	resp, err := ctl.Svc.TodayStats(c.Request.Context(), currentUserID(c), activeFamilyID(c), babyID)
+	resp, err := ctl.Svc.TodayStats(c.Request.Context(), currentUserID(c), ctl.resolveFamilyID(c), babyID)
 	if err != nil {
 		ctl.respondError(c, err)
 		return

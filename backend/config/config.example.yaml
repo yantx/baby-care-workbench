@@ -3,19 +3,19 @@ server:
   port: 8080
   mode: debug # debug / release
 
-# PostgreSQL 连接配置（密码请勿提交到仓库，本地复制 example 后填写）
+# PostgreSQL 连接配置（生产环境请用环境变量 BABY_DB_PASSWORD 覆盖，避免密码入库）
 database:
-  host: 127.0.0.1
+  host: 192.168.1.8
   port: 5432
   user: postgres
-  password: "" # 在此填写本机 PG 密码
+  password: ""
   dbname: baby_care
   sslmode: disable
   timezone: Asia/Shanghai
 
 # Redis 连接配置（Phase 1 可选，未配置或不可达时仅告警不影响启动）
 redis:
-  host: 127.0.0.1
+  host: 192.168.1.8
   port: 6379
   password: ""
   db: 0

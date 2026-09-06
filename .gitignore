@@ -3,7 +3,8 @@ backend/baby-care-workbench
 backend/server
 *.exe
 
-# 本地配置（含密码，不入库）
+# 本地配置（含密码，不入库；模板见 config.example.yaml）
+backend/config/config.yaml
 backend/config/config.local.yaml
 
 # IDE

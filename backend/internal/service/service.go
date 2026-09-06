@@ -41,8 +41,8 @@ type wechatSession struct {
 	ErrMsg     string `json:"errmsg"`
 }
 
-// Login 微信登录（code 换 openid），换取 JWT
-func (s *Service) Login(ctx context.Context, code string) (*model.LoginResp, error) {
+// Login 登录换取 JWT（Mock 模式 code 即设备标识；微信模式 code 换 openid）
+func (s *Service) Login(ctx context.Context, code string, nickname string) (*model.LoginResp, error) {
 	var (
 		openid  string
 		unionid string
@@ -65,10 +65,14 @@ func (s *Service) Login(ctx context.Context, code string) (*model.LoginResp, err
 		return nil, err
 	}
 	if user == nil {
+		nick := nickname
+		if nick == "" {
+			nick = "用户" + fmt.Sprintf("%06d", rand.Intn(1000000))
+		}
 		user = &model.User{
-			OpenID:    openid,
-			UnionID:   unionid,
-			Nickname:  "用户" + fmt.Sprintf("%06d", rand.Intn(1000000)),
+			OpenID:        openid,
+			UnionID:       unionid,
+			Nickname:      nick,
 			ActiveFamilyID: 0,
 		}
 		if err := s.Repo.CreateUser(ctx, user); err != nil {
@@ -135,7 +139,12 @@ func (s *Service) CreateFamily(ctx context.Context, userID int64, req *model.Cre
 
 	var family *model.Family
 	err = s.Repo.DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		family = &model.Family{Name: req.Name, OwnerID: userID}
+		// 生成唯一邀请码（6位大写字母+数字，冲突自动重试）
+		inviteCode, err := genInviteCode(tx)
+		if err != nil {
+			return err
+		}
+		family = &model.Family{Name: req.Name, InviteCode: inviteCode, OwnerID: userID}
 		if err := tx.Create(family).Error; err != nil {
 			return err
 		}
@@ -162,6 +171,25 @@ func (s *Service) CreateFamily(ctx context.Context, userID int64, req *model.Cre
 	_ = s.Repo.UpdateUser(ctx, user)
 
 	return s.GetFamilyDetail(ctx, userID, family.ID)
+}
+
+// genInviteCode 生成唯一邀请码（去掉易混淆字符 0/O/1/I）
+func genInviteCode(tx *gorm.DB) (string, error) {
+	const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+	for i := 0; i < 10; i++ {
+		code := make([]byte, 8)
+		for j := range code {
+			code[j] = chars[rand.Intn(len(chars))]
+		}
+		var count int64
+		if err := tx.Model(&model.Family{}).Where("invite_code = ?", string(code)).Count(&count).Error; err != nil {
+			return "", err
+		}
+		if count == 0 {
+			return string(code), nil
+		}
+	}
+	return "", fmt.Errorf("生成邀请码失败，请重试")
 }
 
 // JoinFamily 通过邀请码加入家庭

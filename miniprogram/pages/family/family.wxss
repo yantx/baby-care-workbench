@@ -2,75 +2,238 @@
   padding: 20rpx 24rpx 40rpx;
 }
 
-.family-card {
-  background: linear-gradient(135deg, #ff8a65, #ffab91);
-  border-radius: 24rpx;
-  padding: 40rpx 36rpx;
-  color: #fff;
+.loading-box {
+  padding: 120rpx 0;
+  text-align: center;
 }
 
-.family-name {
-  font-size: 40rpx;
-  font-weight: 600;
+.loading-text {
+  font-size: 26rpx;
+  color: #999;
 }
 
-.family-count {
-  margin-top: 12rpx;
-  font-size: 24rpx;
-  opacity: 0.9;
+/* ---------- 空状态引导 ---------- */
+.empty-hero {
+  text-align: center;
+  padding: 60rpx 40rpx 30rpx;
 }
 
-.section-title {
-  margin: 36rpx 8rpx 16rpx;
-  font-size: 28rpx;
+.hero-icon {
+  font-size: 96rpx;
+}
+
+.hero-title {
+  display: block;
+  margin-top: 20rpx;
+  font-size: 36rpx;
   font-weight: 600;
   color: #333;
 }
 
-.member-list {
+.hero-sub {
+  display: block;
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.6;
+}
+
+/* ---------- 表单卡片 ---------- */
+.form-card {
+  margin-top: 24rpx;
   background: #fff;
   border-radius: 24rpx;
-  padding: 10rpx 30rpx;
+  padding: 36rpx 30rpx;
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
 }
 
-.member-card {
+.card-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.form-row {
+  padding: 22rpx 0;
+  border-bottom: 1rpx solid #f7f7f7;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 14rpx;
+}
+
+.form-input {
+  font-size: 28rpx;
+  color: #333;
+  padding: 12rpx 0;
+}
+
+.seg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+}
+
+.seg-item {
+  padding: 12rpx 26rpx;
+  border-radius: 40rpx;
+  background: #f5f5f5;
+  font-size: 26rpx;
+  color: #666;
+}
+
+.seg-item.on {
+  background: #fff0ea;
+  color: #ff8a65;
+  font-weight: 600;
+}
+
+.picker-value {
+  font-size: 28rpx;
+  color: #333;
+  padding: 12rpx 0;
+}
+
+.btn-primary {
+  margin-top: 30rpx;
+  background: linear-gradient(135deg, #ff8a65, #ffab91);
+  color: #fff;
+  font-size: 30rpx;
+  border-radius: 60rpx;
+}
+
+.btn-ghost {
+  margin-top: 10rpx;
+  background: #f5f5f5;
+  color: #666;
+  font-size: 28rpx;
+  border-radius: 60rpx;
+}
+
+.btn-half {
+  flex: 1;
+  margin-top: 0;
+}
+
+/* ---------- 家庭详情 ---------- */
+.family-card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 36rpx 30rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+}
+
+.family-header {
   display: flex;
   align-items: center;
-  padding: 24rpx 0;
+  justify-content: space-between;
+  padding-bottom: 24rpx;
+  border-bottom: 1rpx solid #f7f7f7;
 }
 
-.member-card + .member-card {
-  border-top: 1rpx solid #f5f5f5;
+.family-name {
+  font-size: 38rpx;
+  font-weight: 600;
+  color: #333;
 }
 
-.member-avatar {
-  width: 88rpx;
-  height: 88rpx;
+.invite-box {
+  display: flex;
+  align-items: center;
+  background: #fff0ea;
+  border-radius: 16rpx;
+  padding: 12rpx 18rpx;
+}
+
+.invite-label {
+  font-size: 20rpx;
+  color: #ffab91;
+  margin-right: 10rpx;
+}
+
+.invite-code {
+  font-size: 30rpx;
+  font-weight: 700;
+  letter-spacing: 4rpx;
+  color: #ff8a65;
+}
+
+.invite-copy {
+  margin-left: 10rpx;
+  font-size: 20rpx;
+  color: #fff;
+  background: #ff8a65;
+  border-radius: 20rpx;
+  padding: 4rpx 14rpx;
+}
+
+.section {
+  margin-top: 28rpx;
+}
+
+.section-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.baby-list,
+.member-list {
+  background: #fafafa;
+  border-radius: 20rpx;
+  padding: 10rpx 26rpx;
+}
+
+.baby-item,
+.member-item {
+  display: flex;
+  align-items: center;
+  padding: 22rpx 0;
+}
+
+.baby-item + .baby-item,
+.member-item + .member-item {
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.baby-icon,
+.member-icon {
+  width: 80rpx;
+  height: 80rpx;
   border-radius: 50%;
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 44rpx;
-  margin-right: 24rpx;
+  font-size: 40rpx;
+  margin-right: 22rpx;
 }
 
+.baby-info,
 .member-info {
   flex: 1;
 }
 
+.baby-name,
 .member-name {
   font-size: 28rpx;
   color: #333;
 }
 
+.baby-birthday,
 .member-role {
   margin-top: 6rpx;
   font-size: 22rpx;
   color: #999;
 }
 
-.owner-tag {
+.member-owner {
   font-size: 20rpx;
   color: #ff8a65;
   background: #fff0ea;
@@ -78,41 +241,7 @@
   border-radius: 20rpx;
 }
 
-.invite-card {
-  background: #fff;
-  border-radius: 24rpx;
-  padding: 40rpx 30rpx;
-  text-align: center;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
-}
-
-.invite-code {
-  font-size: 64rpx;
-  font-weight: 700;
-  letter-spacing: 16rpx;
-  color: #ff8a65;
-}
-
-.invite-tip {
-  margin-top: 16rpx;
-  font-size: 24rpx;
-  color: #999;
-}
-
-.invite-btn {
-  margin-top: 24rpx;
-  background: #fff0ea;
-  color: #ff8a65;
-}
-
-.join-btn {
-  margin-top: 30rpx;
-  background: #fff;
-  color: #666;
-  font-size: 26rpx;
-  border-radius: 60rpx;
-}
-
+/* ---------- 加入家庭弹层 ---------- */
 .mask {
   position: fixed;
   left: 0;
@@ -127,7 +256,7 @@
 }
 
 .modal {
-  width: 560rpx;
+  width: 580rpx;
   background: #fff;
   border-radius: 24rpx;
   padding: 40rpx 36rpx;
@@ -138,20 +267,11 @@
   font-weight: 600;
   color: #333;
   text-align: center;
-}
-
-.modal-input {
-  margin-top: 30rpx;
-  border: 1rpx solid #eee;
-  border-radius: 12rpx;
-  padding: 20rpx;
-  font-size: 32rpx;
-  text-align: center;
-  letter-spacing: 8rpx;
+  margin-bottom: 10rpx;
 }
 
 .modal-btns {
-  margin-top: 30rpx;
+  margin-top: 34rpx;
   display: flex;
-  justify-content: space-around;
+  gap: 20rpx;
 }

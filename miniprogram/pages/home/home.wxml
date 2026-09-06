@@ -1,19 +1,25 @@
 <view class="page">
   <!-- 同步状态提示 -->
-  <view wx:if="{{syncStatus}}" class="sync-tip">⚡ {{syncStatus}}</view>
+  <view wx:if="{{syncStatus}}" class="sync-tip">{{syncStatus}}</view>
+
+  <!-- 宝宝信息 -->
+  <view class="baby-bar">
+    <text class="baby-name">{{babyName}}</text>
+    <text wx:if="{{daysOld}}" class="days-old">{{daysOld}}</text>
+  </view>
 
   <!-- 今日统计卡片 -->
   <view class="stats-card">
     <view class="stat-item">
-      <view class="stat-num">{{summary.feedCount}}</view>
+      <view class="stat-num">{{summary.feedingCount}}</view>
       <view class="stat-label">喂养次数</view>
     </view>
     <view class="stat-item">
-      <view class="stat-num">{{summary.feedAmount}}</view>
+      <view class="stat-num">{{summary.feedingTotalML}}</view>
       <view class="stat-label">奶量(ml)</view>
     </view>
     <view class="stat-item">
-      <view class="stat-num">{{summary.sleepMinutes}}</view>
+      <view class="stat-num">{{summary.sleepTotalMin}}</view>
       <view class="stat-label">睡眠(分)</view>
     </view>
     <view class="stat-item">
@@ -38,7 +44,7 @@
   <view class="quick-record">
     <view class="quick-title">快捷记录</view>
     <view class="quick-grid">
-      <view class="quick-item" bindtap="goRecord" data-type="feed">
+      <view class="quick-item" bindtap="goRecord" data-type="feeding">
         <text class="quick-icon">🍼</text>
         <text>喂养</text>
       </view>
@@ -50,7 +56,7 @@
         <text class="quick-icon">🧷</text>
         <text>换尿布</text>
       </view>
-      <view class="quick-item" bindtap="goRecord" data-type="temp">
+      <view class="quick-item" bindtap="goRecord" data-type="temperature">
         <text class="quick-icon">🌡️</text>
         <text>体温</text>
       </view>

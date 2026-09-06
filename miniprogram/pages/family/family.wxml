@@ -1,42 +1,128 @@
 <view class="page">
-  <!-- 家庭卡片 -->
-  <view class="family-card" wx:if="{{family}}">
-    <view class="family-name">{{family.name || '我的家庭'}}</view>
-    <view class="family-count">{{members.length}} 位家庭成员一起照看宝宝</view>
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="loading-box">
+    <text class="loading-text">加载中...</text>
   </view>
 
-  <!-- 成员列表 -->
-  <view class="section-title">家庭成员</view>
-  <view class="member-list">
-    <view wx:for="{{members}}" wx:key="id" class="member-card">
-      <view class="member-avatar" style="background: {{item.roleColor}}1a; color: {{item.roleColor}}">{{item.roleIcon}}</view>
-      <view class="member-info">
-        <view class="member-name">{{item.nickname}}</view>
-        <view class="member-role">{{item.roleLabel}}</view>
-      </view>
-      <view wx:if="{{item.id === family.owner_id}}" class="owner-tag">创建人</view>
+  <!-- 未创建家庭：引导创建或加入 -->
+  <block wx:elif="{{!hasFamily}}">
+    <view class="empty-hero">
+      <text class="hero-icon">🏠</text>
+      <text class="hero-title">建立你们的家庭工作台</text>
+      <text class="hero-sub">创建家庭后，邀请家人加入，喂养、睡眠、换尿布记录实时同步</text>
     </view>
-  </view>
 
-  <!-- 邀请码 -->
-  <view class="section-title">邀请家人</view>
-  <view class="invite-card" wx:if="{{inviteCode}}">
-    <view class="invite-code">{{inviteCode}}</view>
-    <view class="invite-tip">把邀请码发给家人，TA 注册后在「加入家庭」输入即可绑定</view>
-    <button class="invite-btn" size="mini" bindtap="copyInviteCode">复制邀请码</button>
-  </view>
+    <!-- 创建家庭 -->
+    <view class="form-card">
+      <view class="card-title">创建新家庭</view>
+      <view class="form-row">
+        <text class="form-label">家庭名称</text>
+        <input class="form-input" placeholder="如：幸福之家" value="{{createForm.name}}" data-field="name" bindinput="onFormInput" />
+      </view>
+      <view class="form-row">
+        <text class="form-label">我的角色</text>
+        <view class="seg">
+          <view class="seg-item {{createForm.role === 'mother' ? 'on' : ''}}" bindtap="selectRole" data-value="mother">👩 妈妈</view>
+          <view class="seg-item {{createForm.role === 'father' ? 'on' : ''}}" bindtap="selectRole" data-value="father">👨 爸爸</view>
+          <view class="seg-item {{createForm.role === 'grandparent' ? 'on' : ''}}" bindtap="selectRole" data-value="grandparent">👵 祖辈</view>
+          <view class="seg-item {{createForm.role === 'other' ? 'on' : ''}}" bindtap="selectRole" data-value="other">🧑 其他</view>
+        </view>
+      </view>
+      <view class="form-row">
+        <text class="form-label">宝宝昵称</text>
+        <input class="form-input" placeholder="宝宝的小名" value="{{createForm.babyName}}" data-field="babyName" bindinput="onFormInput" />
+      </view>
+      <view class="form-row">
+        <text class="form-label">宝宝性别</text>
+        <view class="seg">
+          <view class="seg-item {{createForm.babyGender === 1 ? 'on' : ''}}" bindtap="selectGender" data-value="1">👦 男宝</view>
+          <view class="seg-item {{createForm.babyGender === 2 ? 'on' : ''}}" bindtap="selectGender" data-value="2">👧 女宝</view>
+        </view>
+      </view>
+      <view class="form-row">
+        <text class="form-label">出生日期</text>
+        <picker mode="date" value="{{createForm.babyBirthday}}" bindchange="onBirthdayChange">
+          <view class="picker-value">{{createForm.babyBirthday || '选择宝宝生日'}}</view>
+        </picker>
+      </view>
+      <button class="btn-primary" bindtap="handleCreate">创建家庭</button>
+    </view>
 
-  <button class="join-btn" bindtap="showJoinPanel">输入邀请码加入家庭</button>
+    <!-- 加入家庭 -->
+    <view class="form-card">
+      <view class="card-title">已有家庭？加入他们</view>
+      <button class="btn-ghost" bindtap="showJoinPanel">输入邀请码加入</button>
+    </view>
+  </block>
+
+  <!-- 已有家庭：展示详情 -->
+  <block wx:else>
+    <view class="family-card">
+      <view class="family-header">
+        <text class="family-name">{{family.name}}</text>
+        <view class="invite-box" bindtap="copyInviteCode">
+          <text class="invite-label">邀请码</text>
+          <text class="invite-code">{{inviteCode}}</text>
+          <text class="invite-copy">复制</text>
+        </view>
+      </view>
+
+      <!-- 宝宝信息 -->
+      <view class="section">
+        <view class="section-title">宝宝</view>
+        <view class="baby-list">
+          <view class="baby-item" wx:for="{{babies}}" wx:key="id">
+            <text class="baby-icon">{{item.gender === 1 ? '👦' : '👧'}}</text>
+            <view class="baby-info">
+              <text class="baby-name">{{item.name}}</text>
+              <text class="baby-birthday" wx:if="{{item.birthday}}">{{item.birthday}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 成员列表 -->
+      <view class="section">
+        <view class="section-title">家庭成员（{{members.length}}人）</view>
+        <view class="member-list">
+          <view class="member-item" wx:for="{{members}}" wx:key="user_id">
+            <text class="member-icon">{{item.roleIcon}}</text>
+            <view class="member-info">
+              <text class="member-name">{{item.nickname || '家人'}}</text>
+              <text class="member-role">{{item.roleLabel}}</text>
+            </view>
+            <text class="member-owner" wx:if="{{item.is_owner}}">创建者</text>
+          </view>
+        </view>
+      </view>
+
+      <button class="btn-primary" bindtap="goHome">进入今日看板</button>
+    </view>
+  </block>
 
   <!-- 加入家庭弹层 -->
-  <view wx:if="{{showJoin}}" class="mask" bindtap="hideJoinPanel">
+  <view class="mask" wx:if="{{showJoin}}" bindtap="hideJoinPanel">
     <view class="modal" catchtap="">
       <view class="modal-title">加入家庭</view>
-      <input class="modal-input" placeholder="请输入6位邀请码" value="{{joinCode}}" bindinput="onJoinCodeInput" maxlength="6" />
+      <view class="form-row">
+        <text class="form-label">邀请码</text>
+        <input class="form-input" placeholder="8位邀请码" value="{{joinCode}}" bindinput="onJoinCodeInput" maxlength="8" />
+      </view>
+      <view class="form-row">
+        <text class="form-label">我的角色</text>
+        <view class="seg">
+          <view class="seg-item {{joinRole === 'father' ? 'on' : ''}}" bindtap="selectJoinRole" data-value="father">👨 爸爸</view>
+          <view class="seg-item {{joinRole === 'mother' ? 'on' : ''}}" bindtap="selectJoinRole" data-value="mother">👩 妈妈</view>
+          <view class="seg-item {{joinRole === 'grandparent' ? 'on' : ''}}" bindtap="selectJoinRole" data-value="grandparent">👵 祖辈</view>
+          <view class="seg-item {{joinRole === 'other' ? 'on' : ''}}" bindtap="selectJoinRole" data-value="other">🧑 其他</view>
+        </view>
+      </view>
       <view class="modal-btns">
-        <button size="mini" bindtap="hideJoinPanel">取消</button>
-        <button size="mini" type="primary" bindtap="handleJoin">加入</button>
+        <button class="btn-ghost btn-half" bindtap="hideJoinPanel">取消</button>
+        <button class="btn-primary btn-half" bindtap="handleJoin">加入</button>
       </view>
     </view>
   </view>
+
 </view>

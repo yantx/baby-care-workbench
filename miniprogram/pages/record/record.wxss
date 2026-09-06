@@ -83,6 +83,13 @@
   color: #333;
 }
 
+.dt-picker {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 20rpx;
+}
+
 .hint {
   padding: 0 0 20rpx;
   font-size: 22rpx;

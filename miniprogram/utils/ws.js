@@ -1,4 +1,5 @@
 // WebSocket 实时同步管理器：家庭多角色数据实时同步（核心差异化能力）
+// 协议见后端 internal/ws/hub.go：{type, family_id, sender_id, timestamp, data}
 const app = getApp()
 
 let task = null
@@ -10,11 +11,11 @@ const MAX_RECONNECT = 10
 const HEARTBEAT_INTERVAL = 25000
 
 function wsUrl() {
-  const base = app.globalData.baseUrl.replace(/^http/, 'ws')
+  const base = app.globalData.apiBase.replace(/^http/, 'ws')
   return base + '/ws?token=' + (app.globalData.token || '')
 }
 
-// 注册事件监听：on('record.created', cb)
+// 注册事件监听：on('record.created', cb)  cb(data)
 function on(eventType, callback) {
   if (!listeners[eventType]) listeners[eventType] = []
   listeners[eventType].push(callback)
@@ -33,17 +34,9 @@ function dispatch(message) {
   const cbs = listeners[message.type] || []
   cbs.forEach((cb) => {
     try {
-      cb(message.data)
+      cb(message.data, message)
     } catch (e) {
       console.error('[ws] listener error:', e)
-    }
-  })
-  // 通配监听
-  ;(listeners['*'] || []).forEach((cb) => {
-    try {
-      cb(message)
-    } catch (e) {
-      console.error('[ws] wildcard listener error:', e)
     }
   })
 }
@@ -57,7 +50,6 @@ function connect() {
   task.onOpen(() => {
     reconnectCount = 0
     startHeartbeat()
-    dispatch({ type: 'ws.open' })
   })
 
   task.onMessage((res) => {
@@ -72,7 +64,6 @@ function connect() {
 
   task.onClose(() => {
     stopHeartbeat()
-    dispatch({ type: 'ws.close' })
     scheduleReconnect()
   })
 

@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
-	"time"
+	"strconv"
 
 	"gopkg.in/yaml.v3"
 )
@@ -51,8 +51,8 @@ func (r RedisConfig) Addr() string {
 }
 
 type JWTConfig struct {
-	Secret      string        `yaml:"secret"`
-	ExpireHours time.Duration `yaml:"expire_hours"`
+	Secret      string `yaml:"secret"`
+	ExpireHours int    `yaml:"expire_hours"` // 有效期（小时）
 }
 
 type WechatConfig struct {
@@ -66,6 +66,54 @@ func (w WechatConfig) MockLogin() bool {
 }
 
 var cfg *Config
+
+// envOverride 环境变量覆盖（优先级高于配置文件，生产环境用它注入密码等敏感信息）
+// 支持：BABY_SERVER_PORT / BABY_DB_HOST / BABY_DB_PORT / BABY_DB_USER / BABY_DB_PASSWORD /
+//
+//	BABY_DB_NAME / BABY_REDIS_HOST / BABY_REDIS_PORT / BABY_REDIS_PASSWORD / BABY_REDIS_DB
+func envOverride(c *Config) {
+	if v := os.Getenv("BABY_SERVER_PORT"); v != "" {
+		if p, err := strconv.Atoi(v); err == nil {
+			c.Server.Port = p
+		}
+	}
+	if v := os.Getenv("BABY_DB_HOST"); v != "" {
+		c.Database.Host = v
+	}
+	if v := os.Getenv("BABY_DB_PORT"); v != "" {
+		if p, err := strconv.Atoi(v); err == nil {
+			c.Database.Port = p
+		}
+	}
+	if v := os.Getenv("BABY_DB_USER"); v != "" {
+		c.Database.User = v
+	}
+	if v := os.Getenv("BABY_DB_PASSWORD"); v != "" {
+		c.Database.Password = v
+	}
+	if v := os.Getenv("BABY_DB_NAME"); v != "" {
+		c.Database.DBName = v
+	}
+	if v := os.Getenv("BABY_REDIS_HOST"); v != "" {
+		c.Redis.Host = v
+	}
+	if v := os.Getenv("BABY_REDIS_PORT"); v != "" {
+		if p, err := strconv.Atoi(v); err == nil {
+			c.Redis.Port = p
+		}
+	}
+	if v := os.Getenv("BABY_REDIS_PASSWORD"); v != "" {
+		c.Redis.Password = v
+	}
+	if v := os.Getenv("BABY_REDIS_DB"); v != "" {
+		if p, err := strconv.Atoi(v); err == nil {
+			c.Redis.DB = p
+		}
+	}
+	if v := os.Getenv("BABY_JWT_SECRET"); v != "" {
+		c.JWT.Secret = v
+	}
+}
 
 // Load 加载配置文件，path 为空时使用默认路径
 func Load(path string) (*Config, error) {
@@ -86,6 +134,7 @@ func Load(path string) (*Config, error) {
 	if c.Server.Port == 0 {
 		c.Server.Port = 8080
 	}
+	envOverride(c)
 	cfg = c
 	return c, nil
 }
