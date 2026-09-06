@@ -1,0 +1,105 @@
+/**app.wxss 全局样式**/
+page {
+  background: #f7f8fa;
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 卡片 */
+.card {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 28rpx;
+  margin: 20rpx 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+
+.card-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-bottom: 20rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 按钮 */
+.btn-primary {
+  background: linear-gradient(135deg, #ff8a65, #ff7043);
+  color: #fff;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+  padding: 18rpx 0;
+  text-align: center;
+}
+
+.btn-primary.disabled {
+  opacity: 0.5;
+}
+
+.btn-ghost {
+  border: 2rpx solid #ff8a65;
+  color: #ff8a65;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+  padding: 16rpx 0;
+  text-align: center;
+  background: #fff;
+}
+
+/* 表单 */
+.form-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.form-label {
+  width: 160rpx;
+  color: #666;
+  font-size: 28rpx;
+}
+
+.form-input {
+  flex: 1;
+  font-size: 28rpx;
+}
+
+/* 标签 */
+.tag {
+  display: inline-block;
+  padding: 6rpx 20rpx;
+  border-radius: 24rpx;
+  font-size: 22rpx;
+  margin-right: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.tag.active {
+  background: #ffebe4;
+  color: #ff7043;
+}
+
+.tag.normal {
+  background: #f2f3f5;
+  color: #999;
+}
+
+/* 空状态 */
+.empty {
+  text-align: center;
+  color: #bbb;
+  padding: 80rpx 0;
+  font-size: 26rpx;
+}
+
+/* 文本辅助 */
+.text-muted {
+  color: #999;
+  font-size: 24rpx;
+}
+
+.text-primary {
+  color: #ff7043;
+}

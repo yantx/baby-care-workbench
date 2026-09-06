@@ -1,0 +1,31 @@
+# 服务配置
+server:
+  port: 8080
+  mode: debug # debug / release
+
+# PostgreSQL 连接配置（密码请勿提交到仓库，本地复制 example 后填写）
+database:
+  host: 127.0.0.1
+  port: 5432
+  user: postgres
+  password: "" # 在此填写本机 PG 密码
+  dbname: baby_care
+  sslmode: disable
+  timezone: Asia/Shanghai
+
+# Redis 连接配置（Phase 1 可选，未配置或不可达时仅告警不影响启动）
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password: ""
+  db: 0
+
+# JWT 配置
+jwt:
+  secret: "change-me-in-production" # 生产环境务必更换
+  expire_hours: 720 # 30 天
+
+# 微信小程序配置（测试号或正式号；留空则启用 Mock 登录模式，便于本地开发调试）
+wechat:
+  appid: ""
+  secret: ""

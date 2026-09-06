@@ -1,0 +1,67 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 60rpx 60rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #fff5f0 0%, #ffffff 60%);
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo {
+  font-size: 120rpx;
+  line-height: 1;
+}
+
+.title {
+  margin-top: 30rpx;
+  font-size: 44rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.subtitle {
+  margin-top: 16rpx;
+  font-size: 26rpx;
+  color: #999;
+}
+
+.features {
+  display: flex;
+  margin-top: 100rpx;
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 40rpx;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.feature-item .icon {
+  font-size: 56rpx;
+  margin-bottom: 12rpx;
+}
+
+.login-btn {
+  margin-top: 140rpx;
+  width: 100%;
+  border-radius: 60rpx;
+  background: #ff8a65;
+  color: #fff;
+  font-size: 32rpx;
+}
+
+.tips {
+  margin-top: 30rpx;
+  font-size: 22rpx;
+  color: #bbb;
+}

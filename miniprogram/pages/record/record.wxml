@@ -1,0 +1,105 @@
+<view class="page">
+  <!-- 类型选择 -->
+  <view class="type-bar">
+    <view
+      wx:for="{{typeOptions}}"
+      wx:key="value"
+      class="type-item {{type === item.value ? 'active' : ''}}"
+      bindtap="switchType"
+      data-value="{{item.value}}"
+    >
+      <text class="type-icon">{{item.icon}}</text>
+      <text>{{item.label}}</text>
+    </view>
+  </view>
+
+  <!-- 喂养 -->
+  <view wx:if="{{type === 'feed'}}" class="form-card">
+    <view class="form-row">
+      <text class="form-label">喂养方式</text>
+      <view class="seg">
+        <view class="seg-item {{feedMethod === 'breast' ? 'on' : ''}}" bindtap="onSegTap" data-field="feedMethod" data-value="breast">亲喂</view>
+        <view class="seg-item {{feedMethod === 'bottle' ? 'on' : ''}}" bindtap="onSegTap" data-field="feedMethod" data-value="bottle">瓶喂</view>
+      </view>
+    </view>
+
+    <view wx:if="{{feedMethod === 'bottle'}}" class="form-row">
+      <text class="form-label">奶量(ml)</text>
+      <input class="form-input" type="number" value="{{feedAmount}}" data-field="feedAmount" bindinput="onInput" placeholder="0" />
+    </view>
+
+    <view wx:if="{{feedMethod === 'breast'}}" class="form-row">
+      <text class="form-label">喂奶侧</text>
+      <view class="seg">
+        <view class="seg-item {{feedSide === 'left' ? 'on' : ''}}" bindtap="onSegTap" data-field="feedSide" data-value="left">左侧</view>
+        <view class="seg-item {{feedSide === 'right' ? 'on' : ''}}" bindtap="onSegTap" data-field="feedSide" data-value="right">右侧</view>
+        <view class="seg-item {{feedSide === 'both' ? 'on' : ''}}" bindtap="onSegTap" data-field="feedSide" data-value="both">两侧</view>
+      </view>
+    </view>
+
+    <view wx:if="{{feedMethod === 'breast'}}" class="form-row">
+      <text class="form-label">时长(分钟)</text>
+      <input class="form-input" type="number" value="{{feedDuration}}" data-field="feedDuration" bindinput="onInput" placeholder="10" />
+    </view>
+  </view>
+
+  <!-- 睡眠 -->
+  <view wx:if="{{type === 'sleep'}}" class="form-card">
+    <view class="form-row">
+      <text class="form-label">入睡时间</text>
+      <picker mode="date" fields="minute" value="{{sleepStart}}" data-field="sleepStart" bindchange="onPicker">
+        <view class="picker-value">{{sleepStart}}</view>
+      </picker>
+    </view>
+    <view class="form-row">
+      <text class="form-label">醒来时间</text>
+      <picker mode="date" fields="minute" value="{{sleepEnd}}" data-field="sleepEnd" bindchange="onPicker">
+        <view class="picker-value">{{sleepEnd}}</view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 尿布 -->
+  <view wx:if="{{type === 'diaper'}}" class="form-card">
+    <view class="form-row">
+      <text class="form-label">尿布情况</text>
+      <view class="seg wrap">
+        <view class="seg-item {{diaperType === 'wet' ? 'on' : ''}}" bindtap="onSegTap" data-field="diaperType" data-value="wet">尿湿</view>
+        <view class="seg-item {{diaperType === 'dirty' ? 'on' : ''}}" bindtap="onSegTap" data-field="diaperType" data-value="dirty">有便便</view>
+        <view class="seg-item {{diaperType === 'wet_dirty' ? 'on' : ''}}" bindtap="onSegTap" data-field="diaperType" data-value="wet_dirty">都有</view>
+        <view class="seg-item {{diaperType === 'dry' ? 'on' : ''}}" bindtap="onSegTap" data-field="diaperType" data-value="dry">干燥</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 体温 -->
+  <view wx:if="{{type === 'temp'}}" class="form-card">
+    <view class="form-row">
+      <text class="form-label">体温(℃)</text>
+      <input class="form-input" type="digit" value="{{tempValue}}" data-field="tempValue" bindinput="onInput" placeholder="36.5" />
+    </view>
+    <view class="hint">≥38℃ 将触发发热提醒</view>
+  </view>
+
+  <!-- 用药 -->
+  <view wx:if="{{type === 'medicine'}}" class="form-card">
+    <view class="form-row">
+      <text class="form-label">药品名称</text>
+      <input class="form-input" value="{{medicineName}}" data-field="medicineName" bindinput="onInput" placeholder="如：维生素D3" />
+    </view>
+    <view class="form-row">
+      <text class="form-label">剂量</text>
+      <input class="form-input" value="{{medicineDose}}" data-field="medicineDose" bindinput="onInput" placeholder="如：1滴" />
+    </view>
+  </view>
+
+  <!-- 备注 -->
+  <view class="form-card">
+    <view class="form-row column">
+      <text class="form-label">备注(选填)</text>
+      <textarea class="form-textarea" value="{{note}}" data-field="note" bindinput="onInput" placeholder="记录宝宝状态或其他说明..." maxlength="200" />
+    </view>
+  </view>
+
+  <button class="save-btn" type="primary" bindtap="handleSave" loading="{{saving}}">保存记录</button>
+</view>

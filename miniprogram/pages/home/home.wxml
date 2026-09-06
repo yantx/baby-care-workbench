@@ -1,0 +1,79 @@
+<view class="page">
+  <!-- 同步状态提示 -->
+  <view wx:if="{{syncStatus}}" class="sync-tip">⚡ {{syncStatus}}</view>
+
+  <!-- 今日统计卡片 -->
+  <view class="stats-card">
+    <view class="stat-item">
+      <view class="stat-num">{{summary.feedCount}}</view>
+      <view class="stat-label">喂养次数</view>
+    </view>
+    <view class="stat-item">
+      <view class="stat-num">{{summary.feedAmount}}</view>
+      <view class="stat-label">奶量(ml)</view>
+    </view>
+    <view class="stat-item">
+      <view class="stat-num">{{summary.sleepMinutes}}</view>
+      <view class="stat-label">睡眠(分)</view>
+    </view>
+    <view class="stat-item">
+      <view class="stat-num">{{summary.diaperCount}}</view>
+      <view class="stat-label">换尿布</view>
+    </view>
+  </view>
+
+  <!-- 最近状态 -->
+  <view class="status-card">
+    <view class="status-row">
+      <text class="status-icon">🍼</text>
+      <text class="status-text">{{summary.lastFeedText}}</text>
+    </view>
+    <view class="status-row">
+      <text class="status-icon">😴</text>
+      <text class="status-text">{{summary.lastSleepText}}</text>
+    </view>
+  </view>
+
+  <!-- 快捷记录 -->
+  <view class="quick-record">
+    <view class="quick-title">快捷记录</view>
+    <view class="quick-grid">
+      <view class="quick-item" bindtap="goRecord" data-type="feed">
+        <text class="quick-icon">🍼</text>
+        <text>喂养</text>
+      </view>
+      <view class="quick-item" bindtap="goRecord" data-type="sleep">
+        <text class="quick-icon">😴</text>
+        <text>睡眠</text>
+      </view>
+      <view class="quick-item" bindtap="goRecord" data-type="diaper">
+        <text class="quick-icon">🧷</text>
+        <text>换尿布</text>
+      </view>
+      <view class="quick-item" bindtap="goRecord" data-type="temp">
+        <text class="quick-icon">🌡️</text>
+        <text>体温</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 今日时间线 -->
+  <view class="timeline-card">
+    <view class="card-header" bindtap="goRecords">
+      <text>今日动态</text>
+      <text class="more">全部 ›</text>
+    </view>
+    <view wx:if="{{recentRecords.length === 0 && !loading}}" class="empty">今天还没有记录，点上方快捷按钮开始吧</view>
+    <view wx:for="{{recentRecords}}" wx:key="id" class="timeline-item">
+      <text class="tl-icon">{{item.icon}}</text>
+      <view class="tl-body">
+        <view class="tl-main">
+          <text class="tl-label">{{item.label}}</text>
+          <text class="tl-by">{{item.by}}</text>
+        </view>
+        <view class="tl-detail">{{item.detail}}</view>
+      </view>
+      <text class="tl-time">{{item.time}}</text>
+    </view>
+  </view>
+</view>

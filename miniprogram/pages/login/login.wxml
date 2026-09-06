@@ -1,0 +1,19 @@
+<view class="container">
+  <view class="hero">
+    <view class="logo">🍼</view>
+    <view class="title">爸妈育儿工作台</view>
+    <view class="subtitle">喂奶 · 睡眠 · 换尿布 · 家庭协作</view>
+  </view>
+
+  <view class="features">
+    <view class="feature-item"><text class="icon">📝</text><text>一键记录</text></view>
+    <view class="feature-item"><text class="icon">👥</text><text>全家同步</text></view>
+    <view class="feature-item"><text class="icon">⚡</text><text>实时看板</text></view>
+  </view>
+
+  <button class="login-btn" type="primary" bindtap="handleLogin" loading="{{loading}}">
+    微信一键登录
+  </button>
+
+  <view class="tips">登录即代表同意《用户协议》和《隐私政策》</view>
+</view>

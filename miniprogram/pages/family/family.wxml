@@ -1,0 +1,42 @@
+<view class="page">
+  <!-- 家庭卡片 -->
+  <view class="family-card" wx:if="{{family}}">
+    <view class="family-name">{{family.name || '我的家庭'}}</view>
+    <view class="family-count">{{members.length}} 位家庭成员一起照看宝宝</view>
+  </view>
+
+  <!-- 成员列表 -->
+  <view class="section-title">家庭成员</view>
+  <view class="member-list">
+    <view wx:for="{{members}}" wx:key="id" class="member-card">
+      <view class="member-avatar" style="background: {{item.roleColor}}1a; color: {{item.roleColor}}">{{item.roleIcon}}</view>
+      <view class="member-info">
+        <view class="member-name">{{item.nickname}}</view>
+        <view class="member-role">{{item.roleLabel}}</view>
+      </view>
+      <view wx:if="{{item.id === family.owner_id}}" class="owner-tag">创建人</view>
+    </view>
+  </view>
+
+  <!-- 邀请码 -->
+  <view class="section-title">邀请家人</view>
+  <view class="invite-card" wx:if="{{inviteCode}}">
+    <view class="invite-code">{{inviteCode}}</view>
+    <view class="invite-tip">把邀请码发给家人，TA 注册后在「加入家庭」输入即可绑定</view>
+    <button class="invite-btn" size="mini" bindtap="copyInviteCode">复制邀请码</button>
+  </view>
+
+  <button class="join-btn" bindtap="showJoinPanel">输入邀请码加入家庭</button>
+
+  <!-- 加入家庭弹层 -->
+  <view wx:if="{{showJoin}}" class="mask" bindtap="hideJoinPanel">
+    <view class="modal" catchtap="">
+      <view class="modal-title">加入家庭</view>
+      <input class="modal-input" placeholder="请输入6位邀请码" value="{{joinCode}}" bindinput="onJoinCodeInput" maxlength="6" />
+      <view class="modal-btns">
+        <button size="mini" bindtap="hideJoinPanel">取消</button>
+        <button size="mini" type="primary" bindtap="handleJoin">加入</button>
+      </view>
+    </view>
+  </view>
+</view>

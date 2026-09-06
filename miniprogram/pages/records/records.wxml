@@ -1,0 +1,45 @@
+<view class="page">
+  <!-- 日期选择 + 筛选 -->
+  <view class="toolbar">
+    <picker mode="date" value="{{date}}" bindchange="onDateChange">
+      <view class="date-btn">📅 {{date}}</view>
+    </picker>
+    <view class="filters">
+      <view
+        wx:for="{{filterOptions}}"
+        wx:key="value"
+        class="filter-item {{filterType === item.value ? 'on' : ''}}"
+        bindtap="switchFilter"
+        data-value="{{item.value}}"
+      >{{item.label}}</view>
+    </view>
+  </view>
+
+  <!-- 记录列表 -->
+  <view wx:if="{{records.length === 0 && !loading}}" class="empty">
+    <view class="empty-icon">📋</view>
+    <view>当天没有记录</view>
+  </view>
+
+  <view wx:for="{{records}}" wx:key="id" class="record-card">
+    <view class="record-main">
+      <text class="record-icon">{{item.icon}}</text>
+      <view class="record-body">
+        <view class="record-title">
+          <text class="record-label">{{item.label}}</text>
+          <text class="record-detail">{{item.detail}}</text>
+        </view>
+        <view class="record-meta">
+          <text>{{item.startTime}}</text>
+          <text wx:if="{{item.endTime}}"> ~ {{item.endTime}}</text>
+          <text class="record-by">· {{item.by}}</text>
+        </view>
+        <view wx:if="{{item.note}}" class="record-note">{{item.note}}</view>
+      </view>
+      <view class="record-del" bindtap="handleDelete" data-id="{{item.id}}">删除</view>
+    </view>
+  </view>
+
+  <!-- 添加按钮 -->
+  <view class="fab" bindtap="goAdd">＋</view>
+</view>

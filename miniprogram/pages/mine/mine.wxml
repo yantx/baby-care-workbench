@@ -1,0 +1,38 @@
+<view class="page">
+  <!-- 用户卡片 -->
+  <view class="user-card">
+    <view class="avatar">👶</view>
+    <view class="user-info">
+      <view class="nickname">{{user.nickname || '未登录'}}</view>
+      <view class="sub">新手爸妈成长中</view>
+    </view>
+  </view>
+
+  <!-- 菜单 -->
+  <view class="menu-card">
+    <view class="menu-item">
+      <text class="menu-icon">🍼</text>
+      <text class="menu-text">宝宝档案</text>
+      <text class="arrow">›</text>
+    </view>
+    <view class="menu-item">
+      <text class="menu-icon">📊</text>
+      <text class="menu-text">护理统计</text>
+      <text class="arrow">›</text>
+    </view>
+    <view class="menu-item">
+      <text class="menu-icon">🔔</text>
+      <text class="menu-text">提醒设置</text>
+      <text class="arrow">›</text>
+    </view>
+    <view class="menu-item" bindtap="handleAbout">
+      <text class="menu-icon">ℹ️</text>
+      <text class="menu-text">关于</text>
+      <text class="arrow">›</text>
+    </view>
+  </view>
+
+  <button class="logout-btn" bindtap="handleLogout">退出登录</button>
+
+  <view class="version">v{{version}} · Phase 1 MVP</view>
+</view>
