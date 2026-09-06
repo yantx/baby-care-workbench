@@ -46,30 +46,27 @@ Page({
 
   async fetchData() {
     const app = getApp()
-    const family = app.globalData.family
-    // 本地无家庭缓存时先拉取
-    if (!family || !family.family || !family.family.id) {
-      try {
-        const f = await get('/api/v1/families/current', {}, { silent: true })
-        if (f && f.family && f.family.id) {
-          app.saveFamily(f)
-        } else {
-          wx.reLaunch({ url: '/pages/family/family' })
-          return
-        }
-      } catch (e) {
-        wx.reLaunch({ url: '/pages/family/family' })
-        return
+    // 每次进入首页都拉取最新家庭信息（days_old 由服务端计算，随日期变化）
+    try {
+      const f = await get('/api/v1/families/current', {}, { silent: true })
+      if (f && f.family && f.family.id) {
+        app.saveFamily(f)
       }
+    } catch (e) {
+      // 接口异常时回退本地缓存
     }
     const fam = app.globalData.family
+    if (!fam || !fam.family || !fam.family.id) {
+      wx.reLaunch({ url: '/pages/family/family' })
+      return
+    }
 
     try {
       const stats = await get('/api/v1/stats/today')
       const baby = (fam.babies && fam.babies[0]) || null
       this.setData({
         babyName: baby ? baby.name : '宝宝',
-        daysOld: baby && baby.birthday ? this.calcDaysOld(baby.birthday) : '',
+        daysOld: baby && baby.days_old ? '出生第 ' + baby.days_old + ' 天' : '',
         summary: {
           feedingCount: stats.feeding_count || 0,
           feedingTotalML: stats.feeding_total_ml || 0,
@@ -85,12 +82,6 @@ Page({
       console.error('获取看板数据失败:', e)
       this.setData({ loading: false })
     }
-  },
-
-  calcDaysOld(birthday) {
-    const d = new Date(birthday.replace(/-/g, '/'))
-    const days = Math.max(0, Math.floor((Date.now() - d.getTime()) / 86400000))
-    return '出生第 ' + (days + 1) + ' 天'
   },
 
   formatRecord(r) {

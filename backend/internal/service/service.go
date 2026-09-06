@@ -250,15 +250,46 @@ func (s *Service) GetFamilyDetail(ctx context.Context, userID, familyID int64) (
 	if err != nil {
 		return nil, err
 	}
+	babyResps := make([]*model.BabyResp, 0, len(babies))
+	for _, b := range babies {
+		babyResps = append(babyResps, toBabyResp(b))
+	}
 	return &model.FamilyDetailResp{
-		Family: family, Members: members, Babies: babies,
+		Family: family, Members: members, Babies: babyResps,
 		MyRole: member.Role, MyNickname: member.Nickname,
 	}, nil
 }
 
+// toBabyResp 模型转响应（服务端计算出生天数，避免各端时区/解析差异）
+func toBabyResp(b *model.Baby) *model.BabyResp {
+	resp := &model.BabyResp{
+		ID: b.ID, Name: b.Name, Gender: b.Gender, AvatarURL: b.AvatarURL,
+	}
+	if b.Birthday == nil {
+		return resp
+	}
+	bd := b.Birthday.In(time.Local)
+	resp.Birthday = bd.Format("2006-01-02")
+	resp.DaysOld = calcDaysOld(bd)
+	return resp
+}
+
+// calcDaysOld 按自然日计算出生第几天：出生当天=第1天
+func calcDaysOld(birthday time.Time) int {
+	loc := time.Local
+	now := time.Now().In(loc)
+	d0 := time.Date(birthday.Year(), birthday.Month(), birthday.Day(), 0, 0, 0, 0, loc)
+	d1 := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, loc)
+	days := int(d1.Sub(d0).Hours()/24) + 1
+	if days < 1 {
+		days = 1
+	}
+	return days
+}
+
 // ---------- 宝宝 ----------
 
-func (s *Service) CreateBaby(ctx context.Context, userID, familyID int64, req *model.CreateBabyReq) (*model.Baby, error) {
+func (s *Service) CreateBaby(ctx context.Context, userID, familyID int64, req *model.CreateBabyReq) (*model.BabyResp, error) {
 	member, err := s.Repo.GetMember(ctx, familyID, userID)
 	if err != nil {
 		return nil, err
@@ -270,7 +301,7 @@ func (s *Service) CreateBaby(ctx context.Context, userID, familyID int64, req *m
 	if err := s.Repo.CreateBaby(ctx, baby); err != nil {
 		return nil, err
 	}
-	return baby, nil
+	return toBabyResp(baby), nil
 }
 
 // ---------- 护理记录 ----------

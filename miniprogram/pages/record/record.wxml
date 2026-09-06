@@ -16,6 +16,28 @@
   <!-- 喂养 -->
   <view wx:if="{{type === 'feeding'}}" class="form-card">
     <view class="form-row">
+      <text class="form-label">开始时间</text>
+      <view class="dt-picker">
+        <picker mode="date" value="{{feedStartDate}}" data-field="feedStartDate" bindchange="onPicker">
+          <view class="picker-value">{{feedStartDate}}</view>
+        </picker>
+        <picker mode="time" value="{{feedStartTime}}" data-field="feedStartTime" bindchange="onPicker">
+          <view class="picker-value">{{feedStartTime}}</view>
+        </picker>
+      </view>
+    </view>
+    <view class="form-row">
+      <text class="form-label">结束时间</text>
+      <view class="dt-picker">
+        <picker mode="date" value="{{feedEndDate || feedStartDate}}" data-field="feedEndDate" bindchange="onPicker">
+          <view class="picker-value {{feedEndDate ? '' : 'placeholder'}}">{{feedEndDate || '选填'}}</view>
+        </picker>
+        <picker mode="time" value="{{feedEndTime}}" data-field="feedEndTime" bindchange="onPicker">
+          <view class="picker-value {{feedEndTime ? '' : 'placeholder'}}">{{feedEndTime || '选填'}}</view>
+        </picker>
+      </view>
+    </view>
+    <view class="form-row">
       <text class="form-label">喂养方式</text>
       <view class="seg">
         <view class="seg-item {{feedMethod === 'breast' ? 'on' : ''}}" bindtap="onSegTap" data-field="feedMethod" data-value="breast">亲喂</view>

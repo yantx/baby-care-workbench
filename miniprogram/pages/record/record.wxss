@@ -83,6 +83,10 @@
   color: #333;
 }
 
+.picker-value.placeholder {
+  color: #bbb;
+}
+
 .dt-picker {
   flex: 1;
   display: flex;

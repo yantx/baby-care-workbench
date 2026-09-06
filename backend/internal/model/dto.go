@@ -86,9 +86,19 @@ type JoinFamilyReq struct {
 type FamilyDetailResp struct {
 	Family    *Family         `json:"family"`
 	Members   []*FamilyMember `json:"members"`
-	Babies    []*Baby         `json:"babies"`
+	Babies    []*BabyResp     `json:"babies"`
 	MyRole    string          `json:"my_role"`
 	MyNickname string         `json:"my_nickname"`
+}
+
+// BabyResp 宝宝档案响应（birthday 格式化为日期；days_old 由服务端计算，出生当天=第1天）
+type BabyResp struct {
+	ID        int64  `json:"id"`
+	Name      string `json:"name"`
+	Gender    int    `json:"gender"`
+	Birthday  string `json:"birthday"`              // YYYY-MM-DD，未填为空
+	DaysOld   int    `json:"days_old"`              // 出生第几天，未填生日为0
+	AvatarURL string `json:"avatar_url"`
 }
 
 // CreateBabyReq 新增宝宝

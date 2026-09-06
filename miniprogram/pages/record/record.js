@@ -17,6 +17,10 @@ Page({
     feedAmount: '',
     feedSide: 'left', // left / right / both
     feedDuration: '',
+    feedStartDate: '',
+    feedStartTime: '',
+    feedEndDate: '', // 选填
+    feedEndTime: '', // 选填
     // 睡眠
     sleepStartDate: '',
     sleepStartTime: '',
@@ -46,6 +50,8 @@ Page({
         icon: TYPE_OPTIONS[k].icon
       })),
       type: TYPE_OPTIONS[options.type] ? options.type : 'feeding',
+      feedStartDate: today,
+      feedStartTime: nowHM,
       sleepStartDate: today,
       sleepStartTime: nowHM,
       sleepEndDate: today,
@@ -108,10 +114,20 @@ Page({
 
     switch (d.type) {
       case 'feeding': {
+        const start = d.feedStartDate + 'T' + d.feedStartTime + ':00+08:00'
         const payload = {
           type: 'feeding',
-          started_at: this.nowTime(),
+          started_at: start,
           details: { method: d.feedMethod }
+        }
+        // 结束时间选填：日期和时间都填了才生效
+        if (d.feedEndDate && d.feedEndTime) {
+          const end = d.feedEndDate + 'T' + d.feedEndTime + ':00+08:00'
+          if (new Date(end.replace(/-/g, '/')) <= new Date(start.replace(/-/g, '/'))) {
+            wx.showToast({ title: '结束时间需晚于开始时间', icon: 'none' })
+            return null
+          }
+          payload.ended_at = end
         }
         if (d.feedMethod === 'bottle') {
           const amount = Number(d.feedAmount)
