@@ -1,4 +1,5 @@
 const { post } = require('../../utils/request')
+const dt = require('../../utils/datetime')
 
 const TYPE_OPTIONS = {
   feeding: { label: '喂养', icon: '🍼' },
@@ -123,7 +124,7 @@ Page({
         // 结束时间选填：日期和时间都填了才生效
         if (d.feedEndDate && d.feedEndTime) {
           const end = d.feedEndDate + 'T' + d.feedEndTime + ':00+08:00'
-          if (new Date(end.replace(/-/g, '/')) <= new Date(start.replace(/-/g, '/'))) {
+          if (dt.durationMin(start, end) <= 0) {
             wx.showToast({ title: '结束时间需晚于开始时间', icon: 'none' })
             return null
           }
@@ -151,7 +152,7 @@ Page({
         const d2 = this.data
         const start = d2.sleepStartDate + 'T' + d2.sleepStartTime + ':00+08:00'
         const end = d2.sleepEndDate + 'T' + d2.sleepEndTime + ':00+08:00'
-        if (new Date(end.replace(/-/g, '/')) <= new Date(start.replace(/-/g, '/'))) {
+        if (dt.durationMin(start, end) <= 0) {
           wx.showToast({ title: '醒来时间需晚于入睡时间', icon: 'none' })
           return null
         }

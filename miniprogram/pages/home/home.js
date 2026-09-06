@@ -1,5 +1,6 @@
 const { get } = require('../../utils/request')
 const ws = require('../../utils/ws')
+const dt = require('../../utils/datetime')
 
 Page({
   data: {
@@ -72,8 +73,8 @@ Page({
           feedingTotalML: stats.feeding_total_ml || 0,
           sleepTotalMin: stats.sleep_total_min || 0,
           diaperCount: stats.diaper_count || 0,
-          lastFeedText: stats.last_feeding_at ? '上次喂养 ' + this.formatTime(stats.last_feeding_at) : '今天还没有喂养记录',
-          lastSleepText: stats.last_sleep_end_at ? '上次醒来 ' + this.formatTime(stats.last_sleep_end_at) : '今天还没有睡眠记录'
+          lastFeedText: stats.last_feeding_at ? '上次喂养 ' + dt.hm(stats.last_feeding_at) : '今天还没有喂养记录',
+          lastSleepText: stats.last_sleep_end_at ? '上次醒来 ' + dt.hm(stats.last_sleep_end_at) : '今天还没有睡眠记录'
         },
         recentRecords: (stats.records || []).slice(0, 20).map((r) => this.formatRecord(r)),
         loading: false
@@ -98,7 +99,7 @@ Page({
       icon: t.icon,
       label: t.label,
       by: (r.recorder && r.recorder.nickname) || '家人',
-      time: this.formatTime(r.started_at),
+      time: dt.range(r.started_at, r.ended_at),
       detail: r.note || this.detailText(r, t.label)
     }
   },
@@ -108,13 +109,6 @@ Page({
     if (r.type === 'temperature' && r.temp_value) return r.temp_value + '℃'
     if (r.content) return r.content
     return fallback
-  },
-
-  formatTime(ts) {
-    if (!ts) return ''
-    const d = new Date(ts.replace(/-/g, '/'))
-    const pad = (n) => String(n).padStart(2, '0')
-    return pad(d.getHours()) + ':' + pad(d.getMinutes())
   },
 
   goRecord(e) {

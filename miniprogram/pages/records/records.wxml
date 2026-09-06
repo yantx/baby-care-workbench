@@ -31,7 +31,7 @@
         </view>
         <view class="record-meta">
           <text>{{item.startTime}}</text>
-          <text wx:if="{{item.endTime}}"> ~ {{item.endTime}}</text>
+          <text wx:if="{{item.endTime}}"> ~ {{item.endTime}}{{item.durationText}}</text>
           <text class="record-by">· {{item.by}}</text>
         </view>
         <view wx:if="{{item.note}}" class="record-note">{{item.note}}</view>

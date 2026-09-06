@@ -1,4 +1,5 @@
 const { get, del } = require('../../utils/request')
+const dt = require('../../utils/datetime')
 
 Page({
   data: {
@@ -67,23 +68,18 @@ Page({
       else if (r.type === 'temperature' && r.temp_value) detail = r.temp_value + '℃'
       else detail = t.label
     }
+    const durText = dt.durationText(r.started_at, r.ended_at)
     return {
       id: r.id,
       icon: t.icon,
       label: t.label,
       by: (r.recorder && r.recorder.nickname) || '家人',
-      startTime: this.formatTime(r.started_at),
-      endTime: this.formatTime(r.ended_at),
+      startTime: dt.hm(r.started_at),
+      endTime: dt.hm(r.ended_at),
+      durationText: durText ? '（' + durText + '）' : '',
       detail,
       note: r.note || ''
     }
-  },
-
-  formatTime(ts) {
-    if (!ts) return ''
-    const d = new Date(ts.replace(/-/g, '/'))
-    const pad = (n) => String(n).padStart(2, '0')
-    return pad(d.getHours()) + ':' + pad(d.getMinutes())
   },
 
   handleDelete(e) {
